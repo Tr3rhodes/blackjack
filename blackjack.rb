@@ -1,124 +1,113 @@
 require_relative 'cards'
 require_relative 'decks'
 
-class BlackJack
+class BlackJack 
+	
+	attr_accessor :dealer_hand,
+                :player_hand,
+                :decks
 
-    attr_accessor :dealer_hand,
-                  :player_hand,
-                  :decks
+	def initialize
+		@decks = Decks.new
+    @player_hand = @decks.cards.shift(2)
+    @dealer_hand = @decks.cards.shift(2)
+	end
 
+	def play
+		blackjack_or_bust
+   	display_hands
+    hit_or_stand
+    # self.player_hand
+    # self.dealer_hand
+    # puts "Player hand value is #{hand_value }"
+    # puts "Dealer hand is #{dealer_value}"
+    # puts "Do you want to hit or stay (h/s)"
+    # choice = gets.chomp
+    #     if choice == "h"
+    #       hit
+    #     else choice == "s"
+    #       stay
+    #     end
+    #     winner
+    #     play_again
+    #
+		# end
+	end
 
-    def initialize
-      @decks = Decks.new
-      @player_hand = @decks.cards.shift(2)
-      @dealer_hand = @decks.cards.shift(2)
-
-
+	def blackjack_or_bust
+		if hand_value(player) == 21
+			puts "BJ"
+    elsif hand_value(dealer) == 21
+      puts "Dealer Wins"
+		elsif hand_value(player) > 21
+     puts "Player Bust"
+    elsif hand_value(dealer) > 21
+      puts "Dealer Bust"
     end
+	end
 
-      def play
-        blackjack_or_bust
-        display_hands
-        hit_or_stand
-        # self.player_hand
-        # self.dealer_hand
-        # puts "Player hand value is #{hand_value }"
-        # puts "Dealer hand is #{dealer_value}"
-        # puts "Do you want to hit or stay (h/s)"
-        # choice = gets.chomp
-      #     if choice == "h"
-      #       hit
-      #     else choice == "s"
-      #       stay
-      #     end
-      #     winner
-      #     play_again
-      #
-      # end
+	def hand_value
+		self.player_hand.inject(0) {|sum, card | sum + card.blackjack_value}
+	end
 
-      def blackjack_or_bust
-        if hand_value(player) == 21
-          puts "BJ"
-        elsif hand_value(dealer) == 21
-          puts "Dealer Wins"
-        elsif hand_value(player) > 21
-          puts "Player Bust"
-        elsif hand_value(dealer) > 21
-          puts "Dealer Bust"
-        end
+	def dealer_value
+		self.dealer_hand.inject(0) {|sum, card| sum + card.blackjack_value}
+	end
+
+	def display_hands(all_dealer=false)        
+	end
+
+	def hit_or_stand
+		puts "h or s"
+    if choice == "h"
+			choice = gets.chomp
+      self.player_hand << @decks.cards.shift
+      winner
+    else
+      dealer_hit
+      winner
+    end
+	end
+
+	def dealer_hit
+		dealer_value <= 16
+	end
+
+  def blackjack
+		player_hand.value.to_i == 21 || dealer_hand.value.to_i > 21
+    puts "Black Jack"
+    play_again
+  end
+
+  def bust
+		player_hand.value.to_i > 21 || dealer_hand.value.to_i > 21
+    winner
+  end
+
+	def winner
+		blackjack
+		if self.player_hand.value >= self.dealer_hand.value || self.dealer_hand.value.bust
+			puts "Player WINS with a value of #{hand_value}"
+      play_again
+    else self.dealer_hand.value > self.player_hand.value ||
+      self.player_hand > 21
+      puts "Dealer WINS with a value of #{dealer_value}"
+    end
+		
+		def play_again
+      puts "Want to play again(y/n)?"
+      choice = gets.chomp
+      if choice == "y"
+        self.play
+      else
+        puts "OK then. Bye!"
+        exit
       end
-
-        def hand_value
-          self.player_hand.inject(0) {|sum, card | sum + card.blackjack_value}
-        end
-
-          def dealer_value
-            self.dealer_hand.inject(0) {|sum, card| sum + card.blackjack_value}
-          end
-
-        def display_hands(all_dealer=false)
-          
-
-        end
-
-
-      def hit_or_stand
-        puts "h or s"
-        if choice = "h"
-          choice = gets.chomp
-          self.player_hand << @decks.cards.shift
-          winner
-        else
-             dealer_hit
-             winner
-
-        end
-      end
-
-      def dealer_hit
-            dealer_value <= 16
-
-      end
-
-        def blackjack
-           player_hand.value.to_i == 21 || dealer_hand.value.to_i > 21
-           puts "Black Jack"
-           play_again
-         end
-
-      def bust
-            player_hand.value.to_i > 21 || dealer_hand.value.to_i > 21
-            winner
-      end
-
-
-          def winner
-            blackjack
-            if self.player_hand.value >= self.dealer_hand.value
-                || self.dealer_hand.value.bust
-              puts "Player WINS with a value of #{hand_value}"
-
-              play_again
-            else self.dealer_hand.value > self.player_hand.value ||
-              self.player_hand > 21
-              puts "Dealer WINS with a value of #{dealer_value}"
-          end
-
-
-        def play_again
-          puts "Want to play again(y/n)?"
-              choice = gets.chomp
-            if choice == "y"
-              self.play
-            else
-          puts "OK then. Bye!"
-          exit
-            end
-        end
+    end
+		
 end
 
-
-    BlackJack.new.play
+BlackJack.new.play
 
 #
 #                   OBJECT OF BLACKJACK
@@ -149,23 +138,7 @@ end
 #
 # NEW DECK AFTER EVERY TURN
 
-
-
-
-#
-#
-
-
-
-
-
-
-
-
-
-
-
-
+	
 # Normal Mode
 #
 # don't consider Aces as possible 1's ... they are always 11s
